@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(cors())
 
 
-mongoose.connect("mongodb://127.0.0.1:27017/todo_v2_mern", {
+mongoose.connect("mongodb+srv://todo_v3_renderdb_user:ASc00lAS_@@cluster0.emjbcyk.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(()=> console.log("Connected to DB...")).catch(console.err)
