@@ -16,7 +16,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/todo_v2_mern", {
 
 //using the model
 
-const Todo = require("./models/Todo")
+const Todo = require("./models/todo")
 
 app.get("/todos", async (req, res) => {
     const todos = await Todo.find()
