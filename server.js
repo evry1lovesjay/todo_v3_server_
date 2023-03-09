@@ -1,55 +1,64 @@
-const express = require("express")
-const mongoose = require("mongoose")
-const cors = require("cors")
+import express from "express"
+import dotenv from "dotenv"
+import mongoose from "mongoose"
+import authRoute from "./routes/auth-routes.js"
+// import usersRoute from "./routes/users-routes.js"
+import TodosRoute from "./routes/todos-routes.js"
+import cookieParser from "cookie-parser"
+import cors from "cors"
 
-
+// const express = require("express") --- standard nodejs method to export...
+// using es6 method
 const app = express()
 
-app.use(express.json())
+dotenv.config()
+
+// connecting to mongoDB via mongoose.........................
+const connect = async ()=>{
+    try{
+        await mongoose.connect(process.env.MONGO_CONNECTION);
+        console.log("connected to mongoDB")
+    } catch (error){
+        throw error
+    }
+}
+
+mongoose.connection.on("disconnected", ()=>{
+    console.log("mongoDB disconnected!")
+})
+
+
+// writing our apis........................................
+
+// app.get("/", (req, res)=>{
+//     res.json("Hello first request!")
+// })
+
+// middlewares.............................................
 app.use(cors())
+app.use(cookieParser())
+app.use(express.json())
 
+// if theres a req to "/auth", use the authRoute
+app.use("/api/auth", authRoute)
+// app.use("/api/users", usersRoute)
+app.use("/api/todos", TodosRoute)
 
-mongoose.connect("mongodb+srv://todo_v3_renderdb_user:ASc00AS_123@cluster0.emjbcyk.mongodb.net/?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(()=> console.log("Connected to DB...")).catch(console.err)
-
-//using the model
-
-const Todo = require("./models/todo")
-
-app.get("/todos", async (req, res) => {
-    const todos = await Todo.find()
-
-    res.json(todos)
-})
-
-app.post("/todos/new", (req, res) => {
-    const todo = new Todo({
-        text: req.body.text
+// middleware to handle errors.............................
+app.use((err,req,res,next)=>{
+    const errorStatus = err.status || 500
+    const errorMessage = err.message || "Something went wrong!"
+    return res.status(errorStatus).json({
+        success:false,
+        status:errorStatus,
+        message:errorMessage,
+        stack: err.stack,
     })
-
-    todo.save()
-    res.json(todo)
 })
 
-app.delete("/todos/delete/:id", async(req, res) => {
-    const result = await Todo.findByIdAndDelete(req.params.id)
-
-    res.json(result)
-})
-
-app.get("/todos/complete/:id", async (req, res)=> {
-    const todo = await Todo.findById(req.params.id)
-
-    todo.complete = !todo.complete
+const PORT = process.env.PORT || 6400
     
-    todo.save()
-
-    res.json(todo)
+app.listen(PORT, () => {
+    connect()
+    console.log(`Connected to backend... ON PORT ${PORT}`)
 })
-
-const PORT = process.env.PORT || 3001
-
-
-app.listen(PORT, () => console.log (`Server started on port ${PORT}`))
