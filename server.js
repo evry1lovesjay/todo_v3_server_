@@ -57,10 +57,8 @@ app.use((err,req,res,next)=>{
 })
 
 const PORT = process.env.PORT || 6400
-
-const ONLINE_PORT = "https://todo-v3-server.onrender.com"
     
-app.listen(ONLINE_PORT, () => {
+app.listen(PORT, () => {
     connect()
     console.log(`Connected to backend... ON PORT ${PORT}`)
 })
