@@ -21,5 +21,7 @@ router.get("/retrieve/:userid", getUserTodos)
 // // GET ALL
 // router.get("/", getTodos)
 
+// router.get("/", getTodos)
+
 
 export default router
